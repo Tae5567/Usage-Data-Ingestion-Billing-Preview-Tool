@@ -21,7 +21,7 @@ A production-ready system that ingests raw usage data from multiple sources, nor
                - Storage: 55GB @ $0.023/GB = $1.27
                - Warnings: "Spike detected on day 14 — 15x normal"
                ↓
-4. EXPORT     → JustPaid JSON | Normalized CSV | Raw JSON
+4. EXPORT     → Standardized JSON | Normalized CSV | Raw JSON
 ```
 
 ---
