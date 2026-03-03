@@ -584,8 +584,8 @@ export default function Home() {
                     </tr>
                   </thead>
                   <tbody>
-                    {previewResult.preview.line_items.map((item: any) => (
-                      <tr key={item.metric_name}>
+                    {previewResult.preview.line_items.map((item: any, index: number) => (
+                      <tr key={`${item.metric_name}-${index}`}>
                         <td>
                           <div className="flex items-center gap-2">
                             <div
