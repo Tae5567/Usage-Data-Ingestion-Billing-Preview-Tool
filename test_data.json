@@ -1,0 +1,9 @@
+[
+  {"event_time": "2024-01-01", "endpoint_calls": 52000, "vm_hours": 12.5, "stored_gb": 48.2, "mau": 14, "data_out_gb": 28.4},
+  {"event_time": "2024-01-02", "endpoint_calls": 61000, "vm_hours": 14.2, "stored_gb": 48.5, "mau": 15, "data_out_gb": 31.2},
+  {"event_time": "2024-01-03", "endpoint_calls": 58000, "vm_hours": 13.8, "stored_gb": 48.9, "mau": 14, "data_out_gb": 29.8},
+  {"event_time": "2024-01-04", "endpoint_calls": 74000, "vm_hours": 16.1, "stored_gb": 49.2, "mau": 16, "data_out_gb": 35.6},
+  {"event_time": "2024-01-05", "endpoint_calls": 69000, "vm_hours": 15.4, "stored_gb": 49.8, "mau": 15, "data_out_gb": 33.1},
+  {"event_time": "2024-01-06", "endpoint_calls": 45000, "vm_hours": 10.8, "stored_gb": 50.1, "mau": 13, "data_out_gb": 26.9},
+  {"event_time": "2024-01-07", "endpoint_calls": 63000, "vm_hours": 14.9, "stored_gb": 50.7, "mau": 15, "data_out_gb": 32.8}
+]
