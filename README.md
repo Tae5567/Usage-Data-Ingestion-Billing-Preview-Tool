@@ -1,6 +1,7 @@
-# BillingLens: Usage Data Ingestion & Billing Preview Tool
+## BillingLens: Usage Data Ingestion & Billing Preview Tool
 
 A production-ready system that ingests raw usage data from multiple sources, normalizes it with AI-assisted field mapping, and generates billing previews before invoices are sent.
+
 ![Project Screenshot](./images/sc4.png)
 ---
 
