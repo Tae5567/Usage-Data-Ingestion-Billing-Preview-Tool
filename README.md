@@ -6,7 +6,7 @@ A production-ready system that ingests raw usage data from multiple sources, nor
 ---
 
 
-## 🗺️ User Flow
+## User Flow
 
 ```
 1. UPLOAD     → Drop a CSV/JSON file (or generate mock data)
@@ -52,7 +52,7 @@ The system uses a two-tier approach:
 
 ---
 
-## 💰 Pricing Engine
+## Pricing Engine
 
 Supports all major SaaS billing models:
 
@@ -103,7 +103,7 @@ Warnings are generated for:
 | `enterprise` | High-volume numbers with comma formatting | Enterprise pitch |
 
 ---
-## 📖 API Reference
+## API Reference
 
 Base URL: `http://localhost:8000`
 
