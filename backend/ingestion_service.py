@@ -18,23 +18,53 @@ from field_mapper import ai_map_fields, normalize_value
 MAX_ROWS = 100_000
 
 # Parse CSV file content.
-# Returns (columns, sample_rows, total_row_count).
-async def parse_csv(file_content: bytes, filename: str) -> Tuple[List[str], List[Dict], int]:
-
-    content = file_content.decode("utf-8-sig").strip()  # Handle BOM
-
-    # Try different delimiters
-    for delimiter in [",", ";", "\t", "|"]:
+# Returns (columns, sample_rows, total_row_count, all_rows).
+async def parse_csv(file_content: bytes, filename: str):
+    content = None
+    for encoding in ["utf-8-sig", "utf-8", "latin-1", "cp1252"]:
         try:
-            reader = csv.DictReader(io.StringIO(content), delimiter=delimiter)
-            rows = list(reader)
-            if rows and len(rows[0]) > 1:
-                columns = list(rows[0].keys())
-                return columns, rows[:5], len(rows)
-        except Exception:
+            content = file_content.decode(encoding)
+            break
+        except (UnicodeDecodeError, LookupError):
             continue
 
-    raise ValueError("Unable to parse CSV — check format and delimiter")
+    if not content:
+        raise ValueError("Could not decode file")
+
+    content = content.replace("\r\n", "\n").replace("\r", "\n").strip()
+
+    # Strip wrapping quotes from the entire content if present
+    lines = content.split("\n")
+    cleaned_lines = []
+    for line in lines:
+        line = line.strip()
+        # If the whole line is wrapped in quotes, unwrap it
+        if line.startswith('"') and line.endswith('"') and line.count('"') == 2:
+            line = line[1:-1]
+        cleaned_lines.append(line)
+    content = "\n".join(cleaned_lines)
+
+    first_line = content.split("\n")[0]
+    delimiter_counts = {
+        ",": first_line.count(","),
+        ";": first_line.count(";"),
+        "\t": first_line.count("\t"),
+        "|": first_line.count("|"),
+    }
+    delimiter = max(delimiter_counts, key=delimiter_counts.get)
+
+    reader = csv.DictReader(io.StringIO(content), delimiter=delimiter)
+    all_rows = []
+    for row in reader:
+        cleaned = {k.strip().lstrip("\ufeff"): v for k, v in row.items() if k and k.strip()}
+        if cleaned:
+            all_rows.append(cleaned)
+
+    if not all_rows:
+        raise ValueError("No data rows found in CSV")
+
+    columns = list(all_rows[0].keys())
+    return columns, all_rows[:5], len(all_rows), all_rows
 
 
 #Parse JSON file content.

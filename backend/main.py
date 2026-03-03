@@ -72,12 +72,23 @@ async def list_pricing_plans(db: AsyncSession = Depends(get_db)):
         select(PricingPlan).order_by(PricingPlan.name)
     )
     plans = result.scalars().all()
-    # Eagerly load rules
+
+    # Load rules in a single query instead of lazy loading per plan
+    all_rules_result = await db.execute(select(PricingRule))
+    all_rules = all_rules_result.scalars().all()
+
+    # Group rules by plan_id manually
+    rules_by_plan = {}
+    for rule in all_rules:
+        pid = str(rule.plan_id)
+        if pid not in rules_by_plan:
+            rules_by_plan[pid] = []
+        rules_by_plan[pid].append(rule)
+
+    # Attach rules to plans
     for plan in plans:
-        rules_result = await db.execute(
-            select(PricingRule).where(PricingRule.plan_id == plan.id)
-        )
-        plan.rules = rules_result.scalars().all()
+        plan.rules = rules_by_plan.get(str(plan.id), [])
+
     return plans
 
 
@@ -115,22 +126,28 @@ async def list_scenarios():
 
 #Upload and analyze a CSV file
 @app.post("/ingest/csv", response_model=IngestResponse)
-async def ingest_csv( file: UploadFile = File(...), customer_id: Optional[uuid.UUID] = Query(None), db: AsyncSession = Depends(get_db), ):
-    
-    # debug
-    print(f"Filename: {file.filename}")
-    print(f"Content-type: {file.content_type}")
-
-    if not (file.filename.endswith(".csv") or file.content_type in ["text/csv", "application/csv", "text/plain"]):
+async def ingest_csv(
+    file: UploadFile = File(...),
+    customer_id: Optional[uuid.UUID] = Query(None),
+    db: AsyncSession = Depends(get_db),
+):
+    is_csv = (
+        file.filename.lower().endswith(".csv")
+        or file.content_type in ["text/csv", "application/csv", "text/plain"]
+    )
+    if not is_csv:
         raise HTTPException(400, "Only CSV files are accepted")
 
     content = await file.read()
-    if len(content) > 50 * 1024 * 1024:  # 50MB limit
+    if len(content) > 50 * 1024 * 1024:
         raise HTTPException(400, "File too large (max 50MB)")
 
+    print(f"File: {file.filename} | Size: {len(content)} bytes | Type: {file.content_type}")
+
     try:
-        columns, sample_rows, total_rows = await parse_csv(content, file.filename)
+        columns, sample_rows, total_rows, all_rows = await parse_csv(content, file.filename)
     except ValueError as e:
+        print(f"Parse error: {e}")
         raise HTTPException(400, str(e))
 
     return await _process_ingestion(
@@ -142,7 +159,7 @@ async def ingest_csv( file: UploadFile = File(...), customer_id: Optional[uuid.U
         sample_rows=[dict(r) for r in sample_rows],
         total_rows=total_rows,
         customer_id=customer_id,
-        all_rows=[dict(r) for r in csv.DictReader(io.StringIO(content.decode("utf-8-sig")))],
+        all_rows=all_rows,
     )
 
 

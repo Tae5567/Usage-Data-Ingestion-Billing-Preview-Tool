@@ -14,6 +14,9 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        env_file_encoding = "utf-8"
+        extra = "ignore"
 
 
 settings = Settings()
+print(f"DB URL loaded: {settings.DATABASE_URL[:30]}...")
