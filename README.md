@@ -93,22 +93,6 @@ Warnings are generated for:
 
 ---
 
-## Demo Scenarios
-
-| Scenario | Description | Best For |
-|----------|-------------|----------|
-| `messy` | Real-world messy CSV: spaces in headers, units in values, missing cells | Main demo |
-| `spike` | Normal data with one 15x outlier day | Anomaly detection demo |
-| `normal` | Clean, predictable daily usage | Happy path |
-| `enterprise` | High-volume numbers with comma formatting | Enterprise pitch |
-
----
-## API Reference
-
-Base URL: `http://localhost:8000`
-
-Interactive docs: `http://localhost:8000/docs`
-
 ### Key Endpoints
 
 | Method | Path | Description |
